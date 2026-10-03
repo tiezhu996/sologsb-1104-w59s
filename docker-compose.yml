@@ -1,0 +1,10 @@
+name: gbmortise
+
+services:
+  frontend:
+    build: ./frontend
+    image: gbmortise-frontend:latest
+    container_name: ${COMPOSE_PROJECT_NAME:-gbmortise}-frontend
+    ports:
+      - "${FRONTEND_PORT:-21804}:80"
+    restart: unless-stopped
