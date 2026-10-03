@@ -1,5 +1,10 @@
 import Dexie, { type Table } from 'dexie'
 import type { Diagram, HitArea } from '../types/diagram'
+import type {
+  ExportTaskRecord,
+  ImportStagingRecord,
+  ImportTaskRecord,
+} from '../types/volume'
 import type { Furniture } from '../types/furniture'
 import type { JointType } from '../types/jointType'
 import type { Member } from '../types/member'
@@ -11,6 +16,9 @@ export class MortiseDatabase extends Dexie {
   steps!: Table<DisassemblyStep, string>
   diagrams!: Table<Diagram, string>
   furniture!: Table<Furniture, string>
+  exportTasks!: Table<ExportTaskRecord, string>
+  importStaging!: Table<ImportStagingRecord, string>
+  importTasks!: Table<ImportTaskRecord, string>
 
   constructor() {
     super('gbmortise-db')
@@ -39,6 +47,13 @@ export class MortiseDatabase extends Dexie {
       await transaction.table<Furniture, string>('furniture').toCollection().modify((furniture) => {
         furniture.schemaRev = 2
       })
+    })
+    // 资料卷分卷：打包任务、已收卷暂存、导入进度，支撑“保留已收卷、断点续传、重试不重复写入”。
+    this.version(3).stores({
+      ...schema,
+      exportTasks: 'id, status, createdAt',
+      importStaging: '[setId+volumeNo], setId, receivedAt',
+      importTasks: 'id, status, updatedAt',
     })
   }
 }

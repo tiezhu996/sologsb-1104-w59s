@@ -4,6 +4,7 @@ import AppRoutes from './router'
 const navItems = [
   { to: '/joints', label: '榫卯图鉴' },
   { to: '/furniture', label: '家具反查' },
+  { to: '/volumes', label: '资料卷工坊' },
 ]
 
 export default function App() {
